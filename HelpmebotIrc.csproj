@@ -41,6 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IIrc.cs" />
+    <Compile Include="IrcClientReaderBase.cs" />
+    <Compile Include="IrcClientWriterBase.cs" />
     <Compile Include="IrcClient.cs" />
     <Compile Include="IrcUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
