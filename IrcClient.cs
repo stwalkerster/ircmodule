@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace helpmebot.Irc
+namespace Helpmebot.Irc
 {
     public class IrcClient : IIrc
     {
