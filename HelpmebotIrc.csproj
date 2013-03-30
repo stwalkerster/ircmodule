@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataReceivedEventArgs.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IIrc.cs" />
     <Compile Include="IrcClientWriterBase.cs" />
     <Compile Include="IrcClient.cs" />
