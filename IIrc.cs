@@ -5,7 +5,7 @@ using System.Text;
 
 namespace helpmebot.Irc
 {
-    interface IIrc
+    public interface IIrc
     {
 
     }

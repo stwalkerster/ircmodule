@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace helpmebot.Irc
 {
-    class IrcClient
+    public class IrcClient : IIrc
     {
         private readonly string _server;
         private readonly short _port;
