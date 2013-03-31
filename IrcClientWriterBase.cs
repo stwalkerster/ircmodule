@@ -38,6 +38,7 @@ namespace Helpmebot.Irc
             get { return _network; }
         }
 
+        [System.ComponentModel.Localizable(false)]
         public abstract void WriteLine(string message);
 
         public void Dispose()
