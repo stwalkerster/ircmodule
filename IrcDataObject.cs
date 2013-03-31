@@ -12,9 +12,11 @@ namespace Helpmebot.Irc
         private IrcUser _prefix ;
         private string _command ;
         private string[] _args ;
+        private IrcClient _network;
 
-        public IrcDataObject(string data)
+        public IrcDataObject(string data, IrcClient network)
         {
+            _network = network;
             this._data = data;
 
             if (!Parse())
@@ -55,7 +57,7 @@ namespace Helpmebot.Irc
             {
                 string[] split1 = raw.Split(new[] {' '}, 2);
                     //TODO: check there'rawData a space, and this returns two items;
-                _prefix = IrcUser.NewFromString(split1[0]);
+                _prefix = IrcUser.NewFromString(split1[0], _network);
                 raw = split1[1];
 
             }

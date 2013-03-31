@@ -7,6 +7,7 @@ namespace Helpmebot.Irc
 {
     public interface IIrc
     {
-
+        Type IrcWriterType { get; set; }
+        void Connect();
     }
 }

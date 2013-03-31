@@ -32,16 +32,6 @@ namespace Helpmebot.Irc
         public IIrc Network { get; private set; }
 
         /// <summary>
-        /// News from string.
-        /// </summary>
-        /// <param name="source">The source.</param>
-        /// <returns></returns>
-        public static IrcUser NewFromString(string source)
-        {
-            return NewFromString(source, null);
-        }
-
-        /// <summary>
         /// New user from string.
         /// </summary>
         /// <param name="source">The source.</param>

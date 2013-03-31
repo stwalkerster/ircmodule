@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
+
+[assembly: InternalsVisibleTo("TestHarness")]
 
 namespace Helpmebot.Irc
 {
@@ -46,7 +49,7 @@ namespace Helpmebot.Irc
             }
         }
 
-        public event EventHandler<DataReceivedEventArgs> DataReceived;
+        internal event EventHandler<DataReceivedEventArgs> DataReceived;
 
         protected IrcClient()
         {
@@ -98,6 +101,8 @@ namespace Helpmebot.Irc
 
         }
 
+
+
         public void Connect()
         {
             if (_socket != null)
@@ -119,11 +124,59 @@ namespace Helpmebot.Irc
                 var readerThread = new Thread(this.readerThread);
                 readerThread.Start();
 
+                DataReceived += IrcClient_DataReceived;
             }
             catch (SocketException)
             {
                 throw; // TODO: handle nicely.
             }
+        }
+
+        private static void IrcClient_DataReceived(object sender, DataReceivedEventArgs e)
+        {
+            // do some basic handling now
+            
+            if (e.DataObject.Command == "PING")
+            {
+                e.Network.Pong(e.DataObject.Arguments[0]);
+            }
+            
+        }
+
+        protected virtual void RegisterConnection()
+        {
+            Pass();
+            Nick();
+            User();
+        }
+
+        protected void Pass()
+        {
+            if (_password != null)
+            {
+                _ircWriter.WriteLine("PASS " + _password);
+            }
+        }
+
+        protected void User()
+        {
+            _ircWriter.WriteLine("USER " + _userName + " * * :" + _realName);
+        }
+
+        protected void Nick()
+        {
+            _ircWriter.WriteLine("NICK " + _nickname);
+        }
+
+        protected void Nick(string nickname)
+        {
+            _ircWriter.WriteLine("NICK " + nickname);
+            _nickname = nickname;
+        }
+
+        internal void Pong(string s)
+        {
+            _ircWriter.WriteLine("PONG :" + s);
         }
 
         private void readerThread()
@@ -133,10 +186,16 @@ namespace Helpmebot.Irc
                 while (_socket.Connected)
                 {
                     string line = _ircReader.ReadLine();
+                    if (line == null)
+                    {
+                        _socket.Close();
+                        continue;
+                    }
+
                     EventHandler<DataReceivedEventArgs> temp = DataReceived;
                     if (temp != null)
                     {
-                        temp(this, new DataReceivedEventArgs(line));
+                        temp(this, new DataReceivedEventArgs(line, this));
                     }
                 }
             }
