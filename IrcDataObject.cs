@@ -7,57 +7,85 @@ namespace Helpmebot.Irc
 {
     public class IrcDataObject
     {
-        private string data;
+        private readonly string _data;
 
-        private IrcUser _prefix = null;
-        private string _command = null;
-        private string[] _args = null;
+        private IrcUser _prefix ;
+        private string _command ;
+        private string[] _args ;
 
         public IrcDataObject(string data)
         {
-            this.data = data;
+            this._data = data;
 
-            parse(data, out _prefix, out _command, out _args);
+            if (!Parse())
+            {
+                throw new ArgumentException("Could not parse message: " + data);
+            }
         }
 
-        public static bool parse(string s, out IrcUser prefix, out string command, out string[] args)
+        public IrcUser Prefix
         {
-            var data = s;
+            get { return _prefix; }
+        }
 
-            if (data[0] == ':') // prefix is present if the first char is a :
+        public string Command
+        {
+            get { return _command; }
+        }
+
+        public string[] Arguments
+        {
+            get { return _args; }
+        }
+
+        private bool Parse()
+        {
+            if (String.IsNullOrEmpty(_data))
             {
-                string[] split1 = data.Split(new[] {' '}, 2);//TODO: check there's a space, and this returns two items;
-                prefix = IrcUser.newFromString(split1[0]);
-                data = split1[1];
+                _prefix = null;
+                _command = null;
+                _args = null;
+                return false;
+            }
+
+
+            var raw = _data;
+
+            if (raw[0] == ':') // prefix is present if the first char is a :
+            {
+                string[] split1 = raw.Split(new[] {' '}, 2);
+                    //TODO: check there'rawData a space, and this returns two items;
+                _prefix = IrcUser.NewFromString(split1[0]);
+                raw = split1[1];
 
             }
             else
             {
-                prefix = null;
+                _prefix = null;
             }
 
             // next is a command, with an OPTIONAL(!) list of arguments following, up to 15. We're gonna assume infinite for the purposes of this code
 
-            if (!data.Contains(" "))
+            if (!raw.Contains(" "))
             {
-                command = data;
-                args = new string[0];
+                _command = raw;
+                _args = new string[0];
                 return true;
-            } // ok, there's arguments
+            } // ok, there'rawData arguments
 
-            var split2 = data.Split(new[] {' '}, 2);
-            command = split2[0];
-            data = split2[1];
+            var split2 = raw.Split(new[] {' '}, 2);
+            _command = split2[0];
+            raw = split2[1];
 
 
             // handle the arguments
             {
                 var xargs = new List<string>();
 
-                if (data.Contains(" :"))
+                if (raw.Contains(" :"))
                 {
                     // split on first instance of " :"
-                    var split3 = data.Split(new[] {" :"}, 2, StringSplitOptions.None);
+                    var split3 = raw.Split(new[] {" :"}, 2, StringSplitOptions.None);
                     var split4 = split3[0].Split(' ');
 
                     xargs.AddRange(split4);
@@ -65,11 +93,11 @@ namespace Helpmebot.Irc
                 }
                 else
                 {
-                    var split5 = data.Split(' ');
+                    var split5 = raw.Split(' ');
                     xargs.AddRange(split5);
                 }
 
-                args = xargs.ToArray();
+                _args = xargs.ToArray();
 
             }
 
@@ -79,7 +107,7 @@ namespace Helpmebot.Irc
 
         public override string ToString()
         {
-            return data;
+            return _data;
         }
     }
 }

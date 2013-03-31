@@ -13,11 +13,11 @@ namespace Helpmebot.Irc
         private readonly string _server;
         private readonly ushort _port;
         private string _nickname;
-        private readonly string _username;
-        private readonly string _realname;
+        private readonly string _userName;
+        private readonly string _realName;
         private readonly string _password;
         private TcpClient _socket;
-        private Type _ircWriterType = typeof(NaiveIrcClientWriter);
+        private Type _ircWriterType = typeof (NaiveIrcClientWriter);
         private IrcClientWriterBase _ircWriter;
         private StreamReader _ircReader;
 
@@ -26,9 +26,14 @@ namespace Helpmebot.Irc
             get { return _ircWriterType; }
             set
             {
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+
                 if (_socket == null)
                 {
-                    if (value.IsSubclassOf(typeof(IrcClientWriterBase)))
+                    if (value.IsSubclassOf(typeof (IrcClientWriterBase)))
                     {
                         _ircWriterType = value;
                     }
@@ -45,11 +50,19 @@ namespace Helpmebot.Irc
 
         protected IrcClient()
         {
-             
+
         }
 
-        public IrcClient(string server, ushort port = 6667, string nickname = "IrcUser", string username = "user",
-                         string realname = "An IRC Client", string password = null) : this()
+
+        public IrcClient(string server, ushort port, string nickname, string userName,
+                         string realName)
+            : this(server, port, nickname, userName, realName, null)
+        {
+        }
+
+        public IrcClient(string server, ushort port, string nickname, string userName,
+                         string realName, string password)
+            : this()
         {
             if (string.IsNullOrEmpty(server))
             {
@@ -69,20 +82,20 @@ namespace Helpmebot.Irc
             }
             _nickname = nickname;
 
-            if (string.IsNullOrEmpty(realname))
+            if (string.IsNullOrEmpty(realName))
             {
-                throw new ArgumentNullException("realname");
+                throw new ArgumentNullException("realName");
             }
-            _realname = realname;
+            _realName = realName;
 
-            if (string.IsNullOrEmpty(username))
+            if (string.IsNullOrEmpty(userName))
             {
-                throw new ArgumentNullException("username");
+                throw new ArgumentNullException("userName");
             }
-            _username = username;
+            _userName = userName;
 
             _password = string.IsNullOrEmpty(server) ? null : password;
-            
+
         }
 
         public void Connect()
@@ -98,7 +111,8 @@ namespace Helpmebot.Irc
                 var socketStream = _socket.GetStream();
 
                 _ircWriter =
-                    (IrcClientWriterBase) Activator.CreateInstance(_ircWriterType, new StreamWriter(socketStream, Encoding.UTF8), this);
+                    (IrcClientWriterBase)
+                    Activator.CreateInstance(_ircWriterType, new StreamWriter(socketStream, Encoding.UTF8), this);
 
                 _ircReader = new StreamReader(socketStream, Encoding.UTF8);
 
@@ -106,7 +120,7 @@ namespace Helpmebot.Irc
                 readerThread.Start();
 
             }
-            catch (SocketException ex)
+            catch (SocketException)
             {
                 throw; // TODO: handle nicely.
             }
@@ -126,9 +140,9 @@ namespace Helpmebot.Irc
                     }
                 }
             }
-            catch (ThreadAbortException ex)
+            catch (ThreadAbortException)
             {
-                
+
             }
         }
     }

@@ -8,15 +8,34 @@ namespace Helpmebot.Irc
 {
     public abstract class IrcClientWriterBase : IDisposable
     {
-        protected readonly StreamWriter _writer;
-        protected readonly IIrc _network;
+        private StreamWriter _writer;
+        private IIrc _network;
 
         protected IrcClientWriterBase(StreamWriter writer, IIrc network)
         {
+            if (writer == null)
+            {
+                throw new ArgumentNullException("writer");
+            }
+            if (network == null)
+            {
+                throw new ArgumentNullException("network");
+            }
+
             _network = network;
             _writer = writer;
 
             _writer.AutoFlush = true;
+        }
+
+        protected internal StreamWriter Writer
+        {
+            get { return _writer; }
+        }
+
+        protected internal IIrc Network
+        {
+            get { return _network; }
         }
 
         public abstract void WriteLine(string message);
@@ -25,6 +44,8 @@ namespace Helpmebot.Irc
         {
             _writer.Flush();
             _writer.Dispose();
+            _writer = null;
+            GC.SuppressFinalize(this);
         }
     }
 }

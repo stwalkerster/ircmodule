@@ -8,47 +8,56 @@ namespace Helpmebot.Irc
     public class IrcUser
     {
         /// <summary>
-        /// Gets or sets the nickname.
+        /// Gets or sets the Nickname.
         /// </summary>
-        /// <value>The nickname.</value>
-        public string nickname { get; set; }
+        /// <value>The Nickname.</value>
+        public string Nickname { get; set; }
 
         /// <summary>
-        /// Gets or sets the username.
+        /// Gets or sets the UserName.
         /// </summary>
-        /// <value>The username.</value>
-        public string username { get; set; }
+        /// <value>The UserName.</value>
+        public string UserName { get; set; }
 
         /// <summary>
-        /// Gets or sets the hostname.
+        /// Gets or sets the HostName.
         /// </summary>
-        /// <value>The hostname.</value>
-        public string hostname { get; set; }
+        /// <value>The HostName.</value>
+        public string HostName { get; set; }
 
         /// <summary>
-        /// Gets or sets the network.
+        /// Gets or sets the Network.
         /// </summary>
-        /// <value>The network.</value>
-        public IIrc network { get; private set; }
+        /// <value>The Network.</value>
+        public IIrc Network { get; private set; }
 
         /// <summary>
         /// News from string.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <returns></returns>
-        public static IrcUser newFromString(string source)
+        public static IrcUser NewFromString(string source)
         {
-            return newFromString(source, null);
+            return NewFromString(source, null);
         }
 
         /// <summary>
         /// New user from string.
         /// </summary>
         /// <param name="source">The source.</param>
-        /// <param name="network">The network.</param>
+        /// <param name="network">The Network.</param>
         /// <returns></returns>
-        public static IrcUser newFromString(string source, IIrc network)
+        public static IrcUser NewFromString(string source, IIrc network)
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (network == null)
+            {
+                throw new ArgumentNullException("network");
+            }
+
             string user, host;
             string nick = user = host = null;
             try
@@ -73,17 +82,17 @@ namespace Helpmebot.Irc
                     nick = source;
                 }
             }
-            catch (IndexOutOfRangeException ex)
+            catch (IndexOutOfRangeException)
             {
                 //TODO: do soemthing;
             }
 
-            IrcUser ret = new IrcUser
+            var ret = new IrcUser
                            {
-                               hostname = host,
-                               nickname = nick,
-                               username = user,
-                               network = network,
+                               HostName = host,
+                               Nickname = nick,
+                               UserName = user,
+                               Network = network,
                            };
             return ret;
         }
@@ -97,16 +106,16 @@ namespace Helpmebot.Irc
 
             string endResult = string.Empty;
 
-            if (this.nickname != null)
-                endResult = this.nickname;
+            if (this.Nickname != null)
+                endResult = this.Nickname;
 
-            if (this.username != null)
+            if (this.UserName != null)
             {
-                endResult += "!" + this.username;
+                endResult += "!" + this.UserName;
             }
-            if (this.hostname != null)
+            if (this.HostName != null)
             {
-                endResult += "@" + this.hostname;
+                endResult += "@" + this.HostName;
             }
 
             return endResult;

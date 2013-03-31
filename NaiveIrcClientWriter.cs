@@ -10,7 +10,7 @@ namespace Helpmebot.Irc
 
         public override void WriteLine(string message)
         {
-            _writer.WriteLine(message);
+            Writer.WriteLine(message);
         }
     }
 }
